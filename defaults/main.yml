@@ -1,7 +1,7 @@
 ---
 
 monit_interval: 60
-monit_start_delay: 30 # 0 to disable
+monit_start_delay: 5 # 0 to disable
 
 monit_alerts_on: true
 monit_alert_skip_when: "action, instance, pid, ppid"
