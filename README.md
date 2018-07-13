@@ -1,6 +1,7 @@
 # ansible-monit
 
-[![Build Status](https://travis-ci.org/defus/ansible-monit.svg?branch=master)](https://travis-ci.org/defus/ansible-monit) [![Ansible Galaxy](https://img.shields.io/badge/galaxy-DavidWittman.redis-blue.svg?style=flat)](https://galaxy.ansible.com/detail#/role/730)
+[![Build Status](https://travis-ci.org/defus/ansible-monit.svg?branch=master)](https://travis-ci.org/defus/ansible-monit) 
+[![Ansible Role](https://img.shields.io/badge/galaxy-defus.ansiblemonit-blue.svg)](https://galaxy.ansible.com/defus/ansible_monit)
 
  - Ansible 2.1+
    - Ansible 1.9.x is currently supported, but it will be deprecated soon
@@ -10,7 +11,6 @@
 
  1. [Installation](#installation)
  2. [Getting Started](#getting-started)
-  1. [Single Monit node](#single-monit-node)
  3. [Advanced Options](#advanced-options)
   1. [Verifying checksums](#verifying-checksums)
   2. [Install from local tarball](#install-from-local-tarball)

@@ -6,9 +6,9 @@ describe 'Monit' do
     it { should be_running }
   end
 
-  describe port(2812) do
-    it { should be_listening.on('0.0.0.0').with('tcp') }
-  end
+  # describe port(2812) do
+  #   it { should be_listening.on('0.0.0.0').with('tcp') }
+  # end
 
   describe file('/etc/monitrc') do
     it { should be_file }
