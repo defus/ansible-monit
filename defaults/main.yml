@@ -68,7 +68,7 @@ monit_user: monit
 monit_group: "{{ monit_user }}"
 ## Networking/connection options
 monit_bind: 0.0.0.0
-monit_port: 8080 #par défaut 2812
+monit_port: 2812
 
 ## Role options
 # Configure monit as a service
