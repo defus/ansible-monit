@@ -1,8 +1,8 @@
 ---
 driver:
   name: docker
-  binary: docker.exe
-  socket: npipe:////./pipe/docker_engine
+  # binary: docker.exe
+  # socket: npipe:////./pipe/docker_engine
   privileged: true
   use_sudo: false
 
