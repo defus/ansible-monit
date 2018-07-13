@@ -1,0 +1,5 @@
+*.swp
+.kitchen/
+.bundle
+*.retry
+Gemfile.lock

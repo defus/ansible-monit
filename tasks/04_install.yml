@@ -1,0 +1,73 @@
+---
+- name: enable overcommit in sysctl
+  sysctl:
+    name: vm.overcommit_memory
+    value: 1
+    state: present
+    reload: yes
+    ignoreerrors: yes
+  when: monit_travis_ci is not defined
+
+- name: create monit install directory
+  file:
+    path: "{{ monit_install_dir }}"
+    state: directory
+    owner: "{{ monit_user }}"
+    group: "{{ monit_group }}"
+
+- name: check if monit user exists (ignore errors)
+  command: id {{ monit_user }}
+  ignore_errors: yes
+  changed_when: false
+  register: user_exists
+
+- name: add monit group
+  group:
+    name: "{{ monit_group }}"
+    state: present
+  when: user_exists|failed
+
+- name: add monit user
+  user:
+    name: "{{ monit_user }}"
+    group: "{{ monit_group }}"
+    comment: "Monit"
+    home: "{{ monit_install_dir }}"
+    shell: /bin/false
+    system: yes
+  when: user_exists|failed
+
+- name: create /var/run/monit
+  file:
+    path: /var/run/monit
+    state: directory
+    owner: "{{ monit_user }}"
+
+- name: Configure monit
+  command: ./configure --prefix={{ monit_install_dir }} --exec-prefix={{ monit_install_dir }}
+  args:
+    chdir: /usr/local/src/monit-{{ monit_version }}
+    creates: /usr/local/src/monit-{{ monit_version }}/Makefile
+
+- name: Make monit
+  command: make
+  args:
+    chdir: /usr/local/src/monit-{{ monit_version }}
+
+- name: install monit
+  command: make install
+  args:
+    chdir: /usr/local/src/monit-{{ monit_version }}
+    creates: "{{ monit_install_dir }}/bin/monit-server"
+
+- name: list monit binaries to add to alternatives
+  command: ls -1 {{ monit_install_dir }}/bin
+  register: monit_binaries
+  changed_when: false
+
+- name: add monit binaries to alternatives
+  alternatives:
+    name: "{{ item }}"
+    path: "{{ monit_install_dir }}/bin/{{ item }}"
+    link: "/usr/bin/{{ item }}"
+  with_items: "{{ monit_binaries.stdout_lines }}"

@@ -1,0 +1,36 @@
+---
+driver:
+  name: docker
+  binary: docker.exe
+  socket: npipe:////./pipe/docker_engine
+  privileged: true
+  use_sudo: false
+
+provisioner:
+  name: ansible_playbook
+  hosts: localhost
+  ansible_verbose: true
+  ansible_verbosity: 2
+  require_ruby_for_busser: false
+  require_chef_for_busser: true
+  ignore_paths_from_root:
+    - .git
+
+platforms:
+  - name: centos-7
+    driver_config:
+      image: dliappis/centos-devopsci:7
+      provision_command:
+        - sed -ri 's/^#?PermitRootLogin .*/PermitRootLogin yes/' /etc/ssh/sshd_config
+        - sed -ri 's/^#?PasswordAuthentication .*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+        - sed -ri 's/^#?UsePAM .*/UsePAM no/' /etc/ssh/sshd_config
+      run_command: "/usr/sbin/init"
+      privileged: true
+      use_sudo: false
+      dns:
+        - 8.8.8.8
+      forward:
+      - 8080:8080
+
+suites:
+  - name: default

@@ -1,0 +1,16 @@
+[Unit]
+Description=Pro-active monitoring utility for unix systems
+After=network.target
+Documentation=man:monit(1) https://mmonit.com/wiki/Monit/HowTo 
+
+[Service]
+Type=simple
+KillMode=process
+ExecStart={{ monit_install_dir }}/bin/monit -I
+ExecStop={{ monit_install_dir }}/bin/monit quit
+ExecReload={{ monit_install_dir }}/bin/monit reload
+User={{ monit_user }}
+Group={{ monit_group }}
+
+[Install]
+WantedBy=multi-user.target

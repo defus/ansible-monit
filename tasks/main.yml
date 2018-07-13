@@ -1,0 +1,21 @@
+---
+- include: 01_check_vars.yml
+
+- include: 02_download.yml
+  tags:
+    - download
+
+- include: 03_dependencies.yml
+  tags:
+    - install
+
+- include: 04_install.yml
+  tags:
+    - install
+
+- include: 05_configure.yml
+  tags:
+    - config
+
+- include: 06_local_facts.yml
+  when: monit_local_facts|bool

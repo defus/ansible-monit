@@ -1,0 +1,72 @@
+---
+- name: create monit working directory
+  file:
+    path: "{{ monit_event_dir }}"
+    state: directory
+    recurse: yes
+    owner: "{{ monit_user }}"
+
+- name: create monit systemd service
+  template:
+    src: "{{ ansible_os_family }}/monit.service.j2"
+    dest: /etc/systemd/system/{{ monit_service_name }}.service
+    mode: 0644
+  register: monit_unit_file
+  when: monit_as_service
+
+- name: reload systemd daemon
+  command: systemctl daemon-reload
+  when:
+    - monit_as_service
+    - monit_unit_file|changed
+
+- name: set monit to start at boot
+  service:
+    name: "{{ monit_service_name }}"
+    enabled: yes
+  when: monit_as_service
+
+# Check then create log dir to prevent aggressively overwriting permissions
+- name: check if log directory exists
+  stat:
+    path: "{{ monit_logfile|dirname }}"
+  register: logdir
+  changed_when: false
+  when: monit_logfile != '""'
+
+- name: create log directory if it does not exist
+  file:
+    state: directory
+    path: "{{ monit_logfile|dirname }}"
+    owner: "{{ monit_user }}"
+    group: "{{ monit_group }}"
+  when:
+    - monit_logfile != '""'
+    - not logdir.stat.exists
+
+- name: touch the log file
+  file:
+    state: touch
+    path: "{{ monit_logfile }}"
+    owner: "{{ monit_user }}"
+    group: "{{ monit_group }}"
+  when: monit_logfile != '""'
+
+- name: create monit config file
+  template:
+    src: etc/monitrc.j2
+    dest: /etc/monitrc
+    owner: "{{ monit_user }}"
+    mode: 0700
+  notify: "restart monit"
+
+# Flush handlers before ensuring the service is started to prevent
+# a start and then restart
+- name: flush handlers to apply config changes
+  meta: flush_handlers
+
+- name: ensure monit is running
+  service:
+    name: "{{ monit_service_name }}"
+    state: started
+  when: monit_as_service

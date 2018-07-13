@@ -1,0 +1,83 @@
+---
+
+monit_interval: 60
+monit_start_delay: 30 # 0 to disable
+
+monit_alerts_on: true
+monit_alert_skip_when: "action, instance, pid, ppid"
+
+monit_mail_host: smtp.gmail.com
+monit_mail_port: 587
+monit_mail_username: you
+monit_mail_password: securepassword
+monit_mail_encryption: TLSV1 # SSLAUTO, SSLV2, SSLV3, TLSV1, TLSV11, TLSV12
+monit_mail_alert_to: me@mydomain.com
+monit_mail_default_from: monit@mydomain.com
+monit_mail_default_subject: "[Monit] $SERVICE $EVENT"
+monit_mail_default_message: "Monit $ACTION $SERVICE at $DATE on $HOST: $DESCRIPTION."
+
+monit_process_list:
+  - process: "foo"
+    pid_path: "/full/path/to/pid/file/foo.pid"
+    start: "systemctl start foo"
+    stop: "systemctl stop foo"
+    timeout: 60
+
+monit_filesystem_list:
+  - filesystem: "datafs"
+    path: "/dev/sdb1"
+    start: "/bin/mount /data"
+    stop: "/bin/unmount /data"
+    permission: "660"
+    uid: "root"
+    gid: "disk"
+    space_usage_alert: 80
+    space_usage_stop: 99
+
+monit_remote_host_list:
+  - host: "myserver"
+    ip: "127.0.0.1"
+    ports:
+      - port: 3306
+        protocol: mysql
+        timeout: 15
+      - port: 8080
+        protocol: http
+        request: "/"
+        content: "Monit runtime status"
+      - port: 443
+        protocol: https
+        timeout: 15
+        request: "/some/path"
+        content: "a string"
+
+## Installation options
+monit_version: 5.25.2
+monit_install_dir: /opt/monit
+monit_event_dir: "{{ monit_install_dir}}/events"
+## Logging '""' par defaut
+monit_logfile: '/var/log/monit/monit.log'
+monit_download_url: "https://mmonit.com/monit/dist/monit-{{ monit_version }}.tar.gz"
+# Set this to true to validate monit tarball checksum against vars/main.yml
+monit_verify_checksum: true
+# Set this value to a local path of a tarball to use for installation instead of downloading
+monit_tarball: false
+# Set this to true to build 32-bit binaries of Monit
+monit_make_32bit: false
+monit_user: monit
+monit_group: "{{ monit_user }}"
+## Networking/connection options
+monit_bind: 0.0.0.0
+monit_port: 8080 #par défaut 2812
+
+## Role options
+# Configure monit as a service
+# This creates the init scripts for Monit and ensures the process is running
+monit_as_service: true
+# Add local facts to /etc/ansible/facts.d for Monit
+monit_local_facts: true
+# Service name
+monit_service_name: "monit"
+
+monit_checksums:
+  5.25.2: 7be59369a9dda7c9b36234be91fc2c7e4f5b1943

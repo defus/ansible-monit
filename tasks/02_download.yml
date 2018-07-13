@@ -1,0 +1,45 @@
+---
+
+# get_url on Ansible 1.x only supports sha256 checksumming, so we're only
+# using `monit_checksums` on Ansible 2.x because they're sha1.
+- name: set monit checksum
+  set_fact:
+    monit_checksum: "{{ 'sha1' if monit_checksums[monit_version]|length == 40 else 'sha256' }}:{{ monit_checksums[monit_version] }}"
+  when:
+    - monit_verify_checksum|bool
+    - monit_checksum is not defined
+    - monit_version in monit_checksums
+    - ansible_version.major >= 2
+
+- name: download monit (ansible 1.x)
+  get_url:
+    url: "{{ monit_download_url }}"
+    dest: /usr/local/src/monit-{{ monit_version }}.tar.gz
+    sha256sum: "{{ monit_checksum|default(omit) }}"
+    validate_certs: false
+  when:
+    - not monit_tarball
+    - ansible_version.major < 2
+
+- name: download Monit (ansible 2.x)
+  get_url:
+    url: "{{ monit_download_url }}"
+    dest: /usr/local/src/monit-{{ monit_version }}.tar.gz
+    checksum: "{{ monit_checksum|default(omit) }}"
+    validate_certs: false
+  when:
+    - not monit_tarball
+    - ansible_version.major >= 2
+
+- name: upload monit
+  copy:
+    src: "{{ monit_tarball }}"
+    dest: /usr/local/src/monit-{{ monit_version }}.tar.gz
+  when: monit_tarball|default(false)
+
+- name: extract monit tarball
+  unarchive:
+    src: /usr/local/src/monit-{{ monit_version }}.tar.gz
+    dest: /usr/local/src
+    creates: /usr/local/src/monit-{{ monit_version }}/Makefile
+    copy: no
