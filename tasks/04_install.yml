@@ -1,19 +1,4 @@
 ---
-- name: enable overcommit in sysctl
-  sysctl:
-    name: vm.overcommit_memory
-    value: 1
-    state: present
-    reload: yes
-    ignoreerrors: yes
-  when: monit_travis_ci is not defined
-
-- name: create monit install directory
-  file:
-    path: "{{ monit_install_dir }}"
-    state: directory
-    owner: "{{ monit_user }}"
-    group: "{{ monit_group }}"
 
 - name: check if monit user exists (ignore errors)
   command: id {{ monit_user }}
@@ -36,6 +21,13 @@
     shell: /bin/false
     system: yes
   when: user_exists|failed
+
+- name: create monit install directory
+  file:
+    path: "{{ monit_install_dir }}"
+    state: directory
+    owner: "{{ monit_user }}"
+    group: "{{ monit_group }}"
 
 - name: create /var/run/monit
   file:
