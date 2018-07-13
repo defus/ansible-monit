@@ -24,7 +24,7 @@ namespace :integration do
 
   desc 'Run integration tests with kitchen-docker'
   task :docker, [:instance] do |_t, args|
-    args.with_defaults(instance: 'default-ubuntu-1404')
+    args.with_defaults(instance: 'default-centos-7')
     require 'kitchen'
     Kitchen.logger = Kitchen.default_file_logger
     loader = Kitchen::Loader::YAML.new(local_config: '.kitchen.docker.filebeat.yml')

@@ -6,7 +6,7 @@ services: docker
 
 env:
   matrix:
-  - INSTANCE=rundeck-centos-7
+  - INSTANCE=default-centos-7
   
 before_install: curl -L https://www.getchef.com/chef/install.sh | sudo bash -s -- -P chefdk -v 0.18.30
 
